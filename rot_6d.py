@@ -12,6 +12,7 @@ Yi Zhou, Connelly Barnes, Jingwan Lu, Jimei Yang, Hao Li.
 Conference on Neural Information Processing Systems (NeurIPS) 2019.
 '''
 import tensorflow as tf
+import tensorflow.compat.v1 as tf_v1
 
 
 def tf_rotation6d_to_matrix(r6d):
@@ -29,15 +30,15 @@ def tf_rotation6d_to_matrix(r6d):
         raise AttributeError("The last demension of the inputs in tf_rotation6d_to_matrix should be 6, \
             but found tensor with shape {}".format(tensor_shape[-1]))
 
-    with tf.variable_scope('rot6d_to_matrix'):
+    with tf_v1.variable_scope('rot6d_to_matrix'):
         r6d   = tf.reshape(r6d, [-1,6])
         x_raw = r6d[:,0:3]
         y_raw = r6d[:,3:6]
     
         x = tf.nn.l2_normalize(x_raw, axis=-1)
-        z = tf.cross(x, y_raw)
+        z = tf.linalg.cross(x, y_raw)
         z = tf.nn.l2_normalize(z, axis=-1)
-        y = tf.cross(z, x)
+        y = tf.linalg.cross(z, x)
 
         x = tf.reshape(x, [-1,3,1])
         y = tf.reshape(y, [-1,3,1])
@@ -67,7 +68,7 @@ def tf_matrix_to_rotation6d(mat):
         raise AttributeError("The inputs in tf_matrix_to_rotation6d should be [...,9] or [...,3,3], \
             but found tensor with shape {}".format(tensor_shape[-1]))
 
-    with tf.variable_scope('matrix_to_ration_6d'):
+    with tf_v1.variable_scope('matrix_to_ration_6d'):
         mat = tf.reshape(mat, [-1, 3, 3])
         r6d = tf.concat([mat[...,0], mat[...,1]], axis=-1)
 

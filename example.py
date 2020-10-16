@@ -10,6 +10,7 @@ from functools import reduce
 
 import numpy as np
 import tensorflow as tf
+import tensorflow.compat.v1 as tf_v1
 from termcolor import colored
 
 from rot_6d import tf_matrix_to_rotation6d, tf_rotation6d_to_matrix
@@ -70,10 +71,12 @@ if __name__ == "__main__":
     
     np_mat = np.array(np_mat)
 
-    tf_mat = tf.convert_to_tensor(np_mat)
-    tf_r6d = tf_matrix_to_rotation6d(tf_mat)
-    tf_mat_from_r6d = tf_rotation6d_to_matrix(tf_r6d)
-    with tf.Session() as sess:
+
+    with tf_v1.Session() as sess:
+        tf_mat = tf.convert_to_tensor(np_mat)
+        tf_r6d = tf_matrix_to_rotation6d(tf_mat)
+        tf_mat_from_r6d = tf_rotation6d_to_matrix(tf_r6d)
+
         mat, r6d, mat_from_r6d = sess.run([tf_mat, tf_r6d, tf_mat_from_r6d])
         
         print (colored("[Original Rotation Matrix]", 'yellow'))
